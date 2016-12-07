@@ -1,9 +1,10 @@
 import urllib2
-from time import gmtime, strftime
+import time
 import threading
 from pushover import init, Client
 from bs4 import BeautifulSoup
 from datetime import datetime
+from dateutil import tz
 from xml.dom import minidom
 import webbrowser
 #token:aG87hsFjfWX7bbJDu6GDqf5dyrxnyd
@@ -59,43 +60,52 @@ class ShopifyMonitor():
          self.data_old=[]
          self.link_set=[]
 
-    def UTCtoEST(self):
-        zulu=strftime("%Y-%m-%d %H:%M:%S", gmtime())
-	    from_zone = tz.gettz('UTC')
-	    to_zone = tz.gettz('America/New_York')
-	    utc=datetime.strptime(zulu, "%Y-%m-%d %H:%M:%S")
-	    utc = utc.replace(tzinfo=from_zone)
-	    eastern = utc.astimezone(to_zone)
-	    return str(eastern) + ' EST'
-
     def update(self, site):
           self.data=[]
-          temp=urllib2.urlopen(site)
-          soup = BeautifulSoup(temp, "xml")
-          loc_value=soup.find_all('loc')
-          print loc_value.content
 
-                for loc_val in loc_value:
-                    item=(loc_val.firstchild.nodeValue)
-                    print item
-          break;
-          #print soup
-          for url in soup.find_all('url')[1:]:
-                #print url
-                date = url.lastmod.string
-                temp_temp = date[:10]+' '+date[11:19]
-                date = temp_temp
-                #print date
-                name = url.find('image'and'title')
-                #print name
-                link = url.loc.string
-                unit = (date, name, link)
+          urlList=[]
+          timeList=[]
+          nameList=[]
+          xml = urllib2.urlopen(site).read()
+          xmldoc = minidom.parseString(xml)
+          links = xmldoc.getElementsByTagName('loc')
+          for l in links[1:]:
+              item=l.firstChild.nodeValue
+              urlList.append(item)
 
-                self.data.append(unit)
+          names = xmldoc.getElementsByTagName('image:title')
+          for n in names[1:]:
+              item=n.firstChild.nodeValue
+              nameList.append(item)
 
+          times = xmldoc.getElementsByTagName('lastmod')
+          for n in times[1:]:
+              item=n.firstChild.nodeValue
+              temp_date = item[:10]+' '+item[11:19]
+              item=UTC2EST(temp_date)
+              timeList.append(item)
+
+          unit=zip(timeList,nameList,urlList)
+          #XML DOM Parsing Approach FAST!
+
+          # temp=urllib2.urlopen(site)
+          # soup = BeautifulSoup(temp, "xml")
+          # #print soup
+          # for url in soup.find_all('url')[1:]:
+          #       #print url
+          #       date = url.lastmod.string
+          #       temp_temp = date[:10]+' '+date[11:19]
+          #       date = UTC2EST(temp_temp)
+          #       #string operation convert to est
+          #       name = url.find('image'and'title').string
+          #       #print name
+          #       link = url.loc.string
+          #       unit = (date, name, link)
+          #self.data=unit.append()
+          #BeatifulSoup 4 Parsing approach SLOW!
+
+          self.data=unit
           self.data = sorted(self.data, key=lambda unit:unit[0],reverse=True)
-          self.data = self.data[0:20]
-          #pp.pprint(data)
 
     def link_gen(self,link,key):
         print ('*****************************************')
@@ -122,6 +132,7 @@ class ShopifyMonitor():
                 time.sleep(0.5)
 
     def run(self,site,key):
+          print UTC2EST(1)
           print('Initializing%s'%site)
           self.update(site)
           self.data_old=self.data
@@ -129,11 +140,11 @@ class ShopifyMonitor():
 
                 self.update(site)
                 n=len(set(self.data)^set(self.data_old))
-                #print n
                 #print('Count= %d'% n)
 
                 if n==0:
-                      #print('No Item Found')
+                      print('No Item Found')
+                      print UTC2EST(1)
                       pass
                 else:
                       #print(len(self.data))
@@ -151,19 +162,29 @@ class ShopifyMonitor():
                 #print len(self.data)
                 #print len(self.data_old)
                 self.data_old=self.data
-                time.sleep(1)
+                #time.sleep(0)
 
 def init_session(site,key): # site for the link of sitemap xml, key is the search keyword
     sitespf=ShopifyMonitor()
     sitethd=threading.Thread(target=sitespf.run,args=(site,key))
     sitethd.start()
 
+def UTC2EST(zulu):
+    if zulu==1:
+        return str(datetime.now())
+    else:
+        from_zone = tz.tzutc()
+        to_zone = tz.tzlocal()
+        utc=datetime.strptime(zulu, "%Y-%m-%d %H:%M:%S")
+        utc = utc.replace(tzinfo=from_zone)
+        eastern = utc.astimezone(to_zone)
+        return str(eastern)[:19]
 
 if __name__ == '__main__':
     #init_session(ronin,'hoodie')
     #init_session(bdga,'')
     #init_session(packer,'boost')
-    #init_session(fog,'')
+    init_session(kith,'')
     #init_session(kith,'')
     #init_session(notre,'')
     #init_session(havn,'')
@@ -180,4 +201,3 @@ if __name__ == '__main__':
     #init_session(unkw,'fear')
     #init_session(excu,'')
     #init_session(sole,'')
-    update(bdga)
