@@ -1,4 +1,4 @@
-import urllib2, zlib,re,json
+import urllib2, zlib,re,json,sys
 import time
 import threading
 from pushover import init, Client
@@ -53,8 +53,9 @@ oth = 'https://offthehook.ca/sitemap_products_1.xml'
 fog = 'https://fearofgod.com/sitemap_products_1.xml'
 excu = 'https://shop.exclucitylife.com/sitemap_products_1.xml'
 
-timeoutSec = 2
+timeoutSec = 5
 SFAF=r'Special|SF|Air|Force|Field'
+BOOST=r'Adidas|Ultra|Boost|Uncage'
 #keyword for searching
 
 class ShopifyMonitor():
@@ -116,12 +117,12 @@ class ShopifyMonitor():
         self.data = sorted(self.data, key=lambda unit: unit[0], reverse=True)
 
     def link_gen(self, link, key):
-        print ('******************************************************************************')
+        print ('*********************************************************************************************')
         site = link.split('/')[2]
         load_var = urllib2.Request(link)
         resp = urllib2.urlopen(load_var)
         data = json.loads(resp.read())
-        print('variant found')
+        print 'New Item Found'+'@'+UTC2EST(1)
         titleOfProduct = data[u'product'][u'title']
         print titleOfProduct
         for sizes in data[u'product'][u'variants']:
@@ -146,7 +147,7 @@ class ShopifyMonitor():
             # webbrowser.open_new_tab(atclink)
         #    time.sleep(0.5)
         # Selenium Later Use
-        exit()
+        #exit()
 
     def run(self, site, key):
         print UTC2EST(1)
@@ -159,16 +160,15 @@ class ShopifyMonitor():
             n = len(set(self.data) ^ set(self.data_old))
             # print('Count= %d'% n)
 
-            if n == 1:
-                print('No Item Found')
-                print UTC2EST(1)
+            if n == 0:
+                #print UTC2EST(1)+' No Item Found'
                 pass
             else:
                 # print(len(self.data))
                 # print(len(self.data_old))
                 head = self.data
                 # print(len(head))
-                print head[0]
+                print head[0][0:2],
                 flag=re.findall(key,str(head[0]),flags=re.I)
                 print len(flag)
                 if len(flag)>4:
@@ -191,7 +191,7 @@ def init_session(site, key):  # site for the link of sitemap xml, key is the sea
 
 def UTC2EST(zulu):
     if zulu == 1:
-        return str(datetime.now())
+        return str(datetime.now())[0:19]
     else:
         from_zone = tz.tzutc()
         to_zone = tz.tzlocal()
@@ -205,8 +205,8 @@ if __name__ == '__main__':
     # init_session(ronin,'hoodie')
     # init_session(bdga,'')
     # init_session(packer,'boost')
-    init_session(kith, TEST)
-    # init_session(kith,'')
+    init_session(kith, BOOST)
+    init_session(bdga, BOOST)
     # init_session(notre,'')
     # init_session(havn,'')
     # init_session(nomad,'wood')
