@@ -53,9 +53,14 @@ oth = 'https://offthehook.ca/sitemap_products_1.xml'
 fog = 'https://fearofgod.com/sitemap_products_1.xml'
 excu = 'https://shop.exclucitylife.com/sitemap_products_1.xml'
 
-timeoutSec = 5
+timeoutSec = 2
 SFAF=r'Special|SF|Air|Force|Field'
 BOOST=r'Adidas|Ultra|Boost|Uncage'
+YEEZY=r'Adidas|Yeezy|350|V2'
+PUMA=r'Puma|Fenty|Rihanna|Creeper'
+VANS=r'Vans|Old|School'
+
+
 #keyword for searching
 
 class ShopifyMonitor():
@@ -79,17 +84,17 @@ class ShopifyMonitor():
         urls=xmldoc.getElementsByTagName('url')
         for url in urls[1:]:
             itm_link = url.getElementsByTagName('loc')[0].firstChild.nodeValue
-            print itm_link
+            #print itm_link
 
             itm_name = url.getElementsByTagName('image:title')
             if len(itm_name)>0:
                 itm_name=itm_name[0].firstChild.nodeValue
             else:
                 itm_name='Undefined'
-            print itm_name
+            #print itm_name
 
             itm_time = url.getElementsByTagName('lastmod')[0].firstChild.nodeValue
-            print itm_time
+            #print itm_time
             itm_time=str(itm_time)
             temp_date = itm_time[:10] + ' ' + itm_time[11:19]
             itm_time = UTC2EST(temp_date)
@@ -98,8 +103,7 @@ class ShopifyMonitor():
             self.data.append(unit)
 
         self.data = sorted(self.data, key=lambda unit: unit[0], reverse=True)
-        print self.data
-        exit()
+
         #   links = xmldoc.getElementsByTagName('loc')
         #
         # for l in links[1:]:
@@ -194,10 +198,11 @@ class ShopifyMonitor():
                 head = self.data
                 # print(len(head))
                 print head[0]
-                flag=re.findall(key,str(head[0]),flags=re.I)
-                print len(flag)
-                if len(flag)>4:
-                    client.send_message(head[0][2], title=head[0][1])
+                for k in key:
+                    flag=re.findall(k,str(head[0]),flags=re.I)
+                    print len(flag)
+                    if len(flag)>4:
+                        client.send_message(head[0][2], title=head[0][1])
                 print(str(head[0][2]))
                 jsonlink = str(head[0][2]) + '.json'
                 self.link_gen(jsonlink, key)
@@ -235,11 +240,11 @@ if __name__ == '__main__':
     # init_session(notre,BOOST)
     # init_session(havn,'')
     # init_session(nomad,'wood')
-    init_session(blds,'SFAF')
-    # init_session(kith,'')
+    init_session(blds,[PUMA,BOOST,VANS])
+    init_session(kith,[PUMA,BOOST,VANS])
     # init_session(bdga,'')
     # init_session(prop,'')
-    # init_session(bdga,'')
+    init_session(bdga,[PUMA,BOOST,VANS])
     # init_session(kith,'')
     # init_session(lvsd,'')
     # init_session(cbshop,'')
