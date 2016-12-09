@@ -76,26 +76,50 @@ class ShopifyMonitor():
         	xml=zlib.decompress(bytes(bytearray(xml)),15+32)
 
         xmldoc = minidom.parseString(xml)
-        links = xmldoc.getElementsByTagName('loc')
+        urls=xmldoc.getElementsByTagName('url')
+        for url in urls[1:]:
+            itm_link = url.getElementsByTagName('loc')[0].firstChild.nodeValue
+            print itm_link
 
-        for l in links[1:]:
-            item = l.firstChild.nodeValue
-            urlList.append(item)
+            itm_name = url.getElementsByTagName('image:title')
+            if len(itm_name)>0:
+                itm_name=itm_name[0].firstChild.nodeValue
+            else:
+                itm_name='Undefined'
+            print itm_name
 
-        names = xmldoc.getElementsByTagName('image:title')
-        for n in names:
-            item = n.firstChild.nodeValue
-            nameList.append(item)
+            itm_time = url.getElementsByTagName('lastmod')[0].firstChild.nodeValue
+            print itm_time
+            itm_time=str(itm_time)
+            temp_date = itm_time[:10] + ' ' + itm_time[11:19]
+            itm_time = UTC2EST(temp_date)
+            
+            unit=(itm_time,itm_name,itm_link)
+            self.data.append(unit)
 
-        times = xmldoc.getElementsByTagName('lastmod')
-        for n in times:
-            item = n.firstChild.nodeValue
-            temp_date = item[:10] + ' ' + item[11:19]
-            item = UTC2EST(temp_date)
-            timeList.append(item)
-
-        unit = zip(timeList, nameList, urlList)
-        # XML DOM Parsing Approach FAST!
+        self.data = sorted(self.data, key=lambda unit: unit[0], reverse=True)
+        print self.data
+        exit()
+        #   links = xmldoc.getElementsByTagName('loc')
+        #
+        # for l in links[1:]:
+        #     item = l.firstChild.nodeValue
+        #     urlList.append(item)
+        #
+        # names = xmldoc.getElementsByTagName('image:title')
+        # for n in names:
+        #     item = n.firstChild.nodeValue
+        #     nameList.append(item)
+        #
+        # times = xmldoc.getElementsByTagName('lastmod')
+        # for n in times:
+        #     item = n.firstChild.nodeValue
+        #     temp_date = item[:10] + ' ' + item[11:19]
+        #     item = UTC2EST(temp_date)
+        #     timeList.append(item)
+        #
+        # unit = zip(timeList, nameList, urlList)
+        # XML DOM Parsing Approach FAST! #Changed Loop fixing index bug
 
         # temp=urllib2.urlopen(site)
         # soup = BeautifulSoup(temp, "xml")
@@ -113,8 +137,7 @@ class ShopifyMonitor():
         # self.data=unit.append()
         # BeatifulSoup 4 Parsing approach SLOW!
 
-        self.data = unit
-        self.data = sorted(self.data, key=lambda unit: unit[0], reverse=True)
+
 
     def link_gen(self, link, key):
         print ('*********************************************************************************************')
@@ -139,7 +162,9 @@ class ShopifyMonitor():
             #site = link.split('/')[2]
             #atclink =
             #print (atclink)
-            self.link_set.append(atclink)
+            #self.link_set.append(atclink)
+            #self.size_set.append(sizes[u'id'])
+        #self.push_link=zip(self.size_set,self_link_set)
 
         #if key == '':
             #pass
@@ -161,14 +186,14 @@ class ShopifyMonitor():
             # print('Count= %d'% n)
 
             if n == 0:
-                #print UTC2EST(1)+' No Item Found'
+                #print UTC2EST(1)+' No Item Found'                                #Need Add Duplicate Filter
                 pass
             else:
                 # print(len(self.data))
                 # print(len(self.data_old))
                 head = self.data
                 # print(len(head))
-                print head[0][0:2],
+                print head[0]
                 flag=re.findall(key,str(head[0]),flags=re.I)
                 print len(flag)
                 if len(flag)>4:
@@ -205,12 +230,12 @@ if __name__ == '__main__':
     # init_session(ronin,'hoodie')
     # init_session(bdga,'')
     # init_session(packer,'boost')
-    init_session(kith, BOOST)
-    init_session(bdga, BOOST)
-    # init_session(notre,'')
+    # init_session(kith, BOOST)
+    # init_session(bdga, BOOST)
+    # init_session(notre,BOOST)
     # init_session(havn,'')
     # init_session(nomad,'wood')
-    # init_session(blds,'')
+    init_session(blds,'SFAF')
     # init_session(kith,'')
     # init_session(bdga,'')
     # init_session(prop,'')
