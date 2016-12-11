@@ -56,6 +56,7 @@ excu = 'https://shop.exclucitylife.com/sitemap_products_1.xml'
 timeoutSec = 5
 SFAF=r'Special|SF|Air|Force|Field'
 BOOST=r'Adidas|Ultra|Boost|Uncage'
+SPJM=r'Jordan|11|Space|Jam'
 #keyword for searching
 
 class ShopifyMonitor():
@@ -79,27 +80,26 @@ class ShopifyMonitor():
         urls=xmldoc.getElementsByTagName('url')
         for url in urls[1:]:
             itm_link = url.getElementsByTagName('loc')[0].firstChild.nodeValue
-            print itm_link
+            #print itm_link
 
             itm_name = url.getElementsByTagName('image:title')
             if len(itm_name)>0:
                 itm_name=itm_name[0].firstChild.nodeValue
             else:
                 itm_name='Undefined'
-            print itm_name
-
+            #print itm_name
             itm_time = url.getElementsByTagName('lastmod')[0].firstChild.nodeValue
-            print itm_time
+            #print itm_time
             itm_time=str(itm_time)
             temp_date = itm_time[:10] + ' ' + itm_time[11:19]
             itm_time = UTC2EST(temp_date)
-            
+
             unit=(itm_time,itm_name,itm_link)
             self.data.append(unit)
 
         self.data = sorted(self.data, key=lambda unit: unit[0], reverse=True)
-        print self.data
-        exit()
+        #print self.data
+        #exit()
         #   links = xmldoc.getElementsByTagName('loc')
         #
         # for l in links[1:]:
@@ -119,7 +119,7 @@ class ShopifyMonitor():
         #     timeList.append(item)
         #
         # unit = zip(timeList, nameList, urlList)
-        # XML DOM Parsing Approach FAST! #Changed Loop fixing index bug
+        # XML DOM Parsing Approach FAST!
 
         # temp=urllib2.urlopen(site)
         # soup = BeautifulSoup(temp, "xml")
@@ -235,13 +235,13 @@ if __name__ == '__main__':
     # init_session(notre,BOOST)
     # init_session(havn,'')
     # init_session(nomad,'wood')
-    init_session(blds,'SFAF')
+    #init_session(,'SFAF')
     # init_session(kith,'')
     # init_session(bdga,'')
     # init_session(prop,'')
     # init_session(bdga,'')
     # init_session(kith,'')
-    # init_session(lvsd,'')
+    init_session(lvsd,'SPJM')
     # init_session(cbshop,'')
     # init_session(palace,'')
     # init_session(unkw,'fear')
