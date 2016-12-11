@@ -200,7 +200,7 @@ class ShopifyMonitor():
                 print head[0]
                 for k in key:
                     flag=re.findall(k,str(head[0]),flags=re.I)
-                    print len(flag)
+                    #print len(flag)
                     if len(flag)>4:
                         client.send_message(head[0][2], title=head[0][1])
                 print(str(head[0][2]))
@@ -211,6 +211,7 @@ class ShopifyMonitor():
             # print len(self.data_old)
             self.data_old = self.data
             time.sleep(timeoutSec)
+            #print 'speed check'
 
 
 def init_session(site, key):  # site for the link of sitemap xml, key is the search keyword
