@@ -152,6 +152,7 @@ class ShopifyMonitor():
         print 'New Item Found'+'@'+UTC2EST(1)
         titleOfProduct = data[u'product'][u'title']
         print titleOfProduct
+        size_link=dict()
         for sizes in data[u'product'][u'variants']:
             if u'inventory_quantity' not in sizes:
                 print '    '+str(sizes[u'title']) +' :: '+str(sizes[u'id'])+' :: QTY: Unavailable'
@@ -159,6 +160,11 @@ class ShopifyMonitor():
                 print '    '+str(sizes[u'title']) +' :: '+str(sizes[u'id'])+' :: QTY: '+str(sizes[u'inventory_quantity'])
             atclink = 'http://' + site + '/cart/%s:1' % sizes[u'id']
             print atclink
+            #size_link=dict([(sizes[u'id'],atclink)])
+            size_link.update([(str(sizes[u'title']),str(sizes[u'id']))])
+
+        print size_link
+
             #if qty == None:
              #   print('Inv_Qty Undefined')
             #else:
