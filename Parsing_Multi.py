@@ -8,14 +8,13 @@ from dateutil import tz
 from xml.dom import minidom
 import webbrowser
 
-# token:aG87hsFjfWX7bbJDu6GDqf5dyrxnyd
-# user:u5jig8iMAwXeVHMKnXssWdjGiMLVdN
+
 # from selenium import webdriver
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import WebDriverWait
 # from selenium.webdriver.support import expected_conditions as EC
 
-client = Client("u5jig8iMAwXeVHMKnXssWdjGiMLVdN", api_token="aG87hsFjfWX7bbJDu6GDqf5dyrxnyd")
+client = Client("", api_token="")
 global headers
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:43.0) Gecko/20100101 Firefox/43.0',}
 
