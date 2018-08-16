@@ -28,7 +28,7 @@ def add_to_cart(link,var):
     response=session.post('http://' + site + '/cart/add.js', data=payload, headers=headers)
     response.raise_for_status()
     cart = session.get('http://' + site + '/cart')
-    #soup = bs(cart.content, 'html.parser')
+    ##soup = bs(cart.content, 'html.parser')
     #cart_count = soup.find('span', 'cartcount').text
     #print('{} item added to cart'.format(cart_count))
     check_out(link)
