@@ -5,4 +5,4 @@ Using sitemap parsing each item link, go to link iterate item variant and genera
 
 Using regex setup keyword, Pushover send link & notification to phone
 
-Support parallel thread, multiple site monitering
+Support parallel thread, multiple site monitoring
